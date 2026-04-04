@@ -127,60 +127,60 @@ const PC_MODELS = [
         "Meta 出品 · 17B 总参数/128E MoE · 顶级性能 · 适合专业场景"
     ),
     
-    // ========== Qwen2.5 系列 ==========
+    // ========== Qwen3.5 系列 ==========
     new ModelConfig(
-        "qwen2.5-7b",
-        "Qwen 2.5 7B",
-        "Qwen 2.5 7B",
-        "5",
-        5368709120,
-        6,
-        8,
-        [32768, 65536, 131072],
-        1,
-        [
-            "https://modelscope.cn/models/litert-community/Qwen2.5-7B-Instruct-litert-lm/resolve/master/Qwen2.5-7B-Instruct.litertlm",
-            "https://ghproxy.com/https://huggingface.co/litert-community/Qwen2.5-7B-Instruct-litert-lm/resolve/main/Qwen2.5-7B-Instruct.litertlm",
-            "https://hf-mirror.com/litert-community/Qwen2.5-7B-Instruct-litert-lm/resolve/main/Qwen2.5-7B-Instruct.litertlm",
-            "https://huggingface.co/litert-community/Qwen2.5-7B-Instruct-litert-lm/resolve/main/Qwen2.5-7B-Instruct.litertlm"
-        ],
-        "阿里出品 · 7B 参数 · 中文最强 · 代码/数学/推理全能"
-    ),
-    new ModelConfig(
-        "qwen2.5-14b",
-        "Qwen 2.5 14B",
-        "Qwen 2.5 14B",
-        "10",
-        10737418240,
+        "qwen3.5-27b",
+        "Qwen 3.5 27B",
+        "Qwen 3.5 27B",
+        "16",
+        17179869184,
         12,
         16,
-        [32768, 65536, 131072],
+        [32768, 65536, 131072, 262144],
         1,
         [
-            "https://modelscope.cn/models/litert-community/Qwen2.5-14B-Instruct-litert-lm/resolve/master/Qwen2.5-14B-Instruct.litertlm",
-            "https://ghproxy.com/https://huggingface.co/litert-community/Qwen2.5-14B-Instruct-litert-lm/resolve/main/Qwen2.5-14B-Instruct.litertlm",
-            "https://hf-mirror.com/litert-community/Qwen2.5-14B-Instruct-litert-lm/resolve/main/Qwen2.5-14B-Instruct.litertlm",
-            "https://huggingface.co/litert-community/Qwen2.5-14B-Instruct-litert-lm/resolve/main/Qwen2.5-14B-Instruct.litertlm"
+            "https://modelscope.cn/models/litert-community/Qwen3.5-27B-litert-lm/resolve/master/Qwen3.5-27B.litertlm",
+            "https://ghproxy.com/https://huggingface.co/litert-community/Qwen3.5-27B-litert-lm/resolve/main/Qwen3.5-27B.litertlm",
+            "https://hf-mirror.com/litert-community/Qwen3.5-27B-litert-lm/resolve/main/Qwen3.5-27B.litertlm",
+            "https://huggingface.co/litert-community/Qwen3.5-27B-litert-lm/resolve/main/Qwen3.5-27B.litertlm"
         ],
-        "阿里出品 · 14B 参数 · 中文场景首选 · 逻辑推理/代码生成优秀"
+        "阿里 2026 新作 · 27B 稠密 · 中文最强 · 代码/数学/推理全面升级"
     ),
     new ModelConfig(
-        "qwen2.5-32b",
-        "Qwen 2.5 32B",
-        "Qwen 2.5 32B",
+        "qwen3.5-35b-a3b",
+        "Qwen 3.5 35B-A3B",
+        "Qwen 3.5 35B-A3B",
         "20",
         21474836480,
         16,
         24,
-        [32768, 65536, 131072, 262144],
+        [65536, 131072, 262144],
         1,
         [
-            "https://modelscope.cn/models/litert-community/Qwen2.5-32B-Instruct-litert-lm/resolve/master/Qwen2.5-32B-Instruct.litertlm",
-            "https://ghproxy.com/https://huggingface.co/litert-community/Qwen2.5-32B-Instruct-litert-lm/resolve/main/Qwen2.5-32B-Instruct.litertlm",
-            "https://hf-mirror.com/litert-community/Qwen2.5-32B-Instruct-litert-lm/resolve/main/Qwen2.5-32B-Instruct.litertlm",
-            "https://huggingface.co/litert-community/Qwen2.5-32B-Instruct-litert-lm/resolve/main/Qwen2.5-32B-Instruct.litertlm"
+            "https://modelscope.cn/models/litert-community/Qwen3.5-35B-A3B-litert-lm/resolve/master/Qwen3.5-35B-A3B.litertlm",
+            "https://ghproxy.com/https://huggingface.co/litert-community/Qwen3.5-35B-A3B-litert-lm/resolve/main/Qwen3.5-35B-A3B.litertlm",
+            "https://hf-mirror.com/litert-community/Qwen3.5-35B-A3B-litert-lm/resolve/main/Qwen3.5-35B-A3B.litertlm",
+            "https://huggingface.co/litert-community/Qwen3.5-35B-A3B-litert-lm/resolve/main/Qwen3.5-35B-A3B.litertlm"
         ],
-        "阿里出品 · 32B 参数 · 旗舰级中文模型 · 媲美 GPT-4 水平"
+        "阿里 2026 新作 · MoE 架构 · 35B 总参数/3B 激活 · 高效推理"
+    ),
+    new ModelConfig(
+        "qwen3.5-122b-a10b",
+        "Qwen 3.5 122B-A10B",
+        "Qwen 3.5 122B-A10B",
+        "70",
+        75161927680,
+        48,
+        64,
+        [65536, 131072, 262144],
+        1,
+        [
+            "https://modelscope.cn/models/litert-community/Qwen3.5-122B-A10B-litert-lm/resolve/master/Qwen3.5-122B-A10B.litertlm",
+            "https://ghproxy.com/https://huggingface.co/litert-community/Qwen3.5-122B-A10B-litert-lm/resolve/main/Qwen3.5-122B-A10B.litertlm",
+            "https://hf-mirror.com/litert-community/Qwen3.5-122B-A10B-litert-lm/resolve/main/Qwen3.5-122B-A10B.litertlm",
+            "https://huggingface.co/litert-community/Qwen3.5-122B-A10B-litert-lm/resolve/main/Qwen3.5-122B-A10B.litertlm"
+        ],
+        "阿里 2026 新作 · MoE 架构 · 122B 总参数/10B 激活 · 旗舰级性能"
     ),
     
     // ========== Phi-4 系列 ==========

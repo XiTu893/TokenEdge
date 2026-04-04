@@ -4,7 +4,7 @@ TokenEdge PC 端 - 边缘设备部署大模型 Token API 服务
 
 ## 功能特性
 
-- ✅ 支持 14 个领先大模型（Gemma 4、Llama 4、Qwen2.5、Phi-4、Mistral、DeepSeek R1）
+- ✅ 支持 14 个领先大模型（Gemma 4、Llama 4、Qwen3.5、Phi-4、Mistral、DeepSeek R1）
 - ✅ 4 个国内下载源自动重试（ModelScope、ghproxy.com、hf-mirror.com、Hugging Face）
 - ✅ 美观的 Google 风格 UI
 - ✅ 内存检测和模型推荐
@@ -24,9 +24,7 @@ TokenEdge PC 端 - 边缘设备部署大模型 Token API 服务
 | **Gemma 4** | 31B Dense | 20GB | 16-24GB | 旗舰版 · 纯稠密模型 · 全球前三性能 |
 | **Llama 4** | Scout | 8GB | 8-12GB | Meta 出品 · 17B 总参数/16E MoE · 多模态原生支持 |
 | **Llama 4** | Maverick | 28GB | 24-32GB | Meta 出品 · 17B 总参数/128E MoE · 顶级性能 |
-| **Qwen2.5** | 7B | 5GB | 6-8GB | 阿里出品 · 7B 参数 · 中文最强 |
-| **Qwen2.5** | 14B | 10GB | 12-16GB | 阿里出品 · 14B 参数 · 中文场景首选 |
-| **Qwen2.5** | 32B | 20GB | 16-24GB | 阿里出品 · 32B 参数 · 旗舰级中文模型 |
+| **Qwen3.5** | 27B, 35B-A3B, 122B-A10B | 16-70GB | 12-64GB | 阿里 2026 新作 · 中文最强 |
 | **Phi-4** | Mini | 4GB | 4-6GB | 微软出品 · 3.8B 参数 · 小身材大智慧 |
 | **Phi-4** | 14B | 11GB | 12-16GB | 微软出品 · 14B 参数 · 思维链推理 |
 | **Mistral** | Nemo | 9GB | 8-12GB | Mistral AI 出品 · 12B 参数 · 高效快速 |
@@ -58,8 +56,8 @@ TokenEdge PC 端 - 边缘设备部署大模型 Token API 服务
 - 🥉 DeepSeek R1 7B - 小身材大智慧
 
 **中文支持最好**：
-- 🥇 Qwen2.5 系列 - 阿里出品，中文场景首选
-- 🥈 Gemma 4 系列 - Google 出品，多语言支持
+- 🥇 Qwen3.5 系列 - 阿里 2026 新作，最强中文模型
+- 🥈 Qwen2.5 系列 - 阿里出品，中文场景首选
 - 🥉 DeepSeek R1 系列 - 深度求索，中文优化
 
 **代码能力最强**：
