@@ -187,7 +187,8 @@ ipcMain.handle('get-server-status', async () => {
 });
 
 ipcMain.handle('open-chat', async (event, config) => {
-    shell.openExternal(`http://localhost:${config.port}`);
+    const chatPath = path.join(__dirname, 'test-chat.html');
+    mainWindow.loadFile(chatPath);
     return { success: true };
 });
 
