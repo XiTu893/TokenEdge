@@ -5,13 +5,16 @@ const os = require('os');
 const { spawn } = require('child_process');
 const net = require('net');
 const ModelDownloader = require('./downloader');
-const { getModelById, GEMMA4_MODELS } = require('./model/ModelConfig');
+const { getModelById, PC_MODELS } = require('./model/ModelConfig');
 
 let mainWindow;
 let apiServer;
+let openclawProcess;
 let modelPath = '';
 let isServerRunning = false;
+let isOpenCLAWRunning = false;
 let currentPort = -1;
+let openclawPort = 8080;
 const START_PORT = 3000;
 const MAX_PORT = 3999;
 const downloader = new ModelDownloader();
@@ -46,11 +49,20 @@ function getModelDir() {
     return modelDir;
 }
 
+function getOpenCLAWDir() {
+    const userDataPath = app.getPath('userData');
+    const openclawDir = path.join(userDataPath, 'openclaw');
+    if (!fs.existsSync(openclawDir)) {
+        fs.mkdirSync(openclawDir, { recursive: true });
+    }
+    return openclawDir;
+}
+
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 900,
-        title: 'TokenEdge - 边缘设备部署大模型Token服务',
+        title: 'TokenEdge - 边缘设备部署大模型 Token 服务',
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
@@ -84,6 +96,16 @@ app.on('before-quit', () => {
     if (apiServer) {
         apiServer.kill();
     }
+    if (openclawProcess) {
+        openclawProcess.kill();
+    }
+});
+
+app.on('will-quit', () => {
+    if (openclawProcess) {
+        console.log('Stopping OpenCLAW...');
+        openclawProcess.kill();
+    }
 });
 
 ipcMain.handle('get-total-ram', async () => {
@@ -97,7 +119,7 @@ ipcMain.handle('download-model', async (event, downloadUrls, modelId) => {
         return { success: false, error: 'Model not found' };
     }
 
-    const fileName = `${modelId}.litertlm`;
+    const fileName = `${modelId}.gguf`;
     const destPath = path.join(modelDir, fileName);
 
     downloader.on('progress', (data) => {
@@ -135,7 +157,7 @@ ipcMain.handle('start-service', async (event, config) => {
     }
 
     const modelDir = getModelDir();
-    const modelPath = path.join(modelDir, `${config.modelId}.litertlm`);
+    const modelPath = path.join(modelDir, `${config.modelId}.gguf`);
     
     if (!fs.existsSync(modelPath)) {
         return { success: false, message: 'Model file not found, please download first' };
@@ -204,4 +226,150 @@ ipcMain.handle('load-config', async () => {
         return JSON.parse(fs.readFileSync(configPath, 'utf8'));
     }
     return { totalRAMGB: getTotalRAM() };
+});
+
+// ========== OpenCLAW 相关功能 ==========
+
+ipcMain.handle('check-openclaw', async () => {
+    const openclawDir = getOpenCLAWDir();
+    const packageJsonPath = path.join(openclawDir, 'package.json');
+    
+    if (!fs.existsSync(packageJsonPath)) {
+        return { installed: false };
+    }
+    
+    try {
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+        return {
+            installed: true,
+            version: packageJson.version || 'unknown',
+            path: openclawDir
+        };
+    } catch (error) {
+        return { installed: false, error: error.message };
+    }
+});
+
+ipcMain.handle('install-openclaw', async (event) => {
+    const openclawDir = getOpenCLAWDir();
+    
+    try {
+        mainWindow.webContents.send('openclaw-log', '正在安装 OpenCLAW...');
+        
+        // 使用 npm 安装
+        const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+        const installProcess = spawn(npm, ['install', '@openclaw/core', '@openclaw/cli', '-g'], {
+            cwd: openclawDir,
+            stdio: ['pipe', 'pipe', 'pipe']
+        });
+        
+        installProcess.stdout.on('data', (data) => {
+            const log = data.toString();
+            mainWindow.webContents.send('openclaw-log', log);
+            console.log(log);
+        });
+        
+        installProcess.stderr.on('data', (data) => {
+            const log = `[ERROR] ${data.toString()}`;
+            mainWindow.webContents.send('openclaw-log', log);
+            console.error(log);
+        });
+        
+        return new Promise((resolve) => {
+            installProcess.on('close', (code) => {
+                if (code === 0) {
+                    mainWindow.webContents.send('openclaw-log', '✅ OpenCLAW 安装成功！');
+                    resolve({ success: true, message: 'OpenCLAW 安装成功' });
+                } else {
+                    mainWindow.webContents.send('openclaw-log', `❌ 安装失败，退出码：${code}`);
+                    resolve({ success: false, message: `安装失败，退出码：${code}` });
+                }
+            });
+            
+            installProcess.on('error', (error) => {
+                mainWindow.webContents.send('openclaw-log', `❌ 安装错误：${error.message}`);
+                resolve({ success: false, error: error.message });
+            });
+        });
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+});
+
+ipcMain.handle('start-openclaw', async (event, config) => {
+    if (isOpenCLAWRunning) {
+        return { success: false, message: 'OpenCLAW 已在运行中' };
+    }
+    
+    try {
+        const openclawDir = getOpenCLAWDir();
+        const openclawCmd = process.platform === 'win32' ? 'openclaw.cmd' : 'openclaw';
+        
+        mainWindow.webContents.send('openclaw-log', '正在启动 OpenCLAW...');
+        
+        // 启动 OpenCLAW Gateway
+        openclawProcess = spawn(openclawCmd, ['gateway', 'start', '--port', openclawPort.toString()], {
+            cwd: openclawDir,
+            stdio: ['pipe', 'pipe', 'pipe']
+        });
+        
+        openclawProcess.stdout.on('data', (data) => {
+            const log = data.toString();
+            mainWindow.webContents.send('openclaw-log', log);
+            console.log(log);
+        });
+        
+        openclawProcess.stderr.on('data', (data) => {
+            const log = `[ERROR] ${data.toString()}`;
+            mainWindow.webContents.send('openclaw-log', log);
+            console.error(log);
+        });
+        
+        openclawProcess.on('close', (code) => {
+            isOpenCLAWRunning = false;
+            mainWindow.webContents.send('openclaw-log', `OpenCLAW 已停止，退出码：${code}`);
+        });
+        
+        isOpenCLAWRunning = true;
+        
+        // 等待 2 秒让服务启动
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        return {
+            success: true,
+            message: 'OpenCLAW 启动成功',
+            port: openclawPort,
+            url: `http://localhost:${openclawPort}`
+        };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+});
+
+ipcMain.handle('stop-openclaw', async () => {
+    if (!openclawProcess) {
+        return { success: false, message: 'OpenCLAW 未运行' };
+    }
+    
+    try {
+        openclawProcess.kill();
+        openclawProcess = null;
+        isOpenCLAWRunning = false;
+        return { success: true, message: 'OpenCLAW 已停止' };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+});
+
+ipcMain.handle('get-openclaw-status', async () => {
+    return {
+        running: isOpenCLAWRunning,
+        port: openclawPort,
+        url: `http://localhost:${openclawPort}`
+    };
+});
+
+ipcMain.handle('open-openclaw-web', async () => {
+    shell.openExternal(`http://localhost:${openclawPort}`);
+    return { success: true };
 });

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TokenEdge - OpenCLAW 管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #1a73e8;
+            margin-bottom: 10px;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #e8f0fe;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dadce0;
+        }
+
+        .status-dot.installed {
+            background: #34a853;
+        }
+
+        .status-dot.running {
+            background: #137333;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #202124;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            padding: 15px;
+            background: #f1f3f4;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #5f6368;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #202124;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1557b0;
+        }
+
+        .btn-success {
+            background: #34a853;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #137333;
+        }
+
+        .btn-danger {
+            background: #ea4335;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c5221f;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .log-line {
+            margin-bottom: 5px;
+        }
+
+        .log-line.error {
+            color: #f48771;
+        }
+
+        .log-line.success {
+            color: #89d185;
+        }
+
+        .log-line.info {
+            color: #6fb3d2;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .feature-item {
+            padding: 15px;
+            background: #f1f3f4;
+            border-radius: 8px;
+            border-left: 4px solid #1a73e8;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            color: #202124;
+            margin-bottom: 5px;
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            color: #5f6368;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 OpenCLAW 管理</h1>
+            <p>安装、配置和启动 OpenCLAW AI 助手框架</p>
+            
+            <div class="status-bar">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">检查中...</span>
+                <span id="statusDetail"></span>
+            </div>
+        </div>
+
+        <div class="card" id="installCard">
+            <h2>📦 安装 OpenCLAW</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">系统要求</div>
+                    <div class="info-value">Node.js 22+</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">磁盘空间</div>
+                    <div class="info-value">~500 MB</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">内存要求</div>
+                    <div class="info-value">2GB+</div>
+                </div>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" id="installBtn" onclick="installOpenCLAW()">
+                    📥 安装 OpenCLAW
+                </button>
+            </div>
+        </div>
+
+        <div class="card" id="controlCard" style="display: none;">
+            <h2>🎮 控制面板</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">状态</div>
+                    <div class="info-value" id="runStatus">未运行</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">端口</div>
+                    <div class="info-value" id="portInfo">8080</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">地址</div>
+                    <div class="info-value" id="urlInfo">-</div>
+                </div>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-success" id="startBtn" onclick="startOpenCLAW()">
+                    ▶️ 启动
+                </button>
+                <button class="btn btn-danger" id="stopBtn" onclick="stopOpenCLAW()" disabled>
+                    ⏹️ 停止
+                </button>
+                <button class="btn btn-primary" id="webBtn" onclick="openWeb()" disabled>
+                    🌐 打开 Web 界面
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 功能特性</h2>
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-title">🤖 AI 助手框架</div>
+                    <div class="feature-desc">强大的 AI 助手开发框架，支持多种模型</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title">🔌 技能系统</div>
+                    <div class="feature-desc">支持 8 大核心技能，可扩展</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title">🌐 Web 界面</div>
+                    <div class="feature-desc">内置 Web 管理界面，可视化操作</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title">📊 网关服务</div>
+                    <div class="feature-desc">高性能网关，支持并发请求</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📝 日志输出</h2>
+            <div class="log-container" id="logContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        let isOpenCLAWInstalled = false;
+        let isOpenCLAWRunning = false;
+        let currentPort = 8080;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkOpenCLAWStatus();
+            
+            ipcRenderer.on('openclaw-log', (event, message) => {
+                addLog(message);
+            });
+        });
+
+        async function checkOpenCLAWStatus() {
+            try {
+                const result = await ipcRenderer.invoke('check-openclaw');
+                isOpenCLAWInstalled = result.installed;
+                
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+                const statusDetail = document.getElementById('statusDetail');
+                const installCard = document.getElementById('installCard');
+                const controlCard = document.getElementById('controlCard');
+                
+                if (result.installed) {
+                    statusDot.className = 'status-dot installed';
+                    statusText.textContent = '已安装';
+                    statusDetail.textContent = `版本：${result.version}`;
+                    installCard.style.display = 'none';
+                    controlCard.style.display = 'block';
+                    
+                    addLog(`✅ OpenCLAW 已安装，版本：${result.version}`);
+                    
+                    // 检查运行状态
+                    const status = await ipcRenderer.invoke('get-openclaw-status');
+                    updateRunStatus(status);
+                } else {
+                    statusDot.className = 'status-dot';
+                    statusText.textContent = '未安装';
+                    statusDetail.textContent = '点击安装按钮进行安装';
+                    installCard.style.display = 'block';
+                    controlCard.style.display = 'none';
+                }
+            } catch (error) {
+                addLog(`❌ 检查失败：${error.message}`, 'error');
+            }
+        }
+
+        function updateRunStatus(status) {
+            isOpenCLAWRunning = status.running;
+            currentPort = status.port;
+            
+            const runStatus = document.getElementById('runStatus');
+            const portInfo = document.getElementById('portInfo');
+            const urlInfo = document.getElementById('urlInfo');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const webBtn = document.getElementById('webBtn');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            if (status.running) {
+                runStatus.textContent = '运行中';
+                runStatus.style.color = '#137333';
+                portInfo.textContent = status.port;
+                urlInfo.textContent = status.url;
+                
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                webBtn.disabled = false;
+                
+                statusDot.className = 'status-dot running';
+                statusText.textContent = '运行中';
+            } else {
+                runStatus.textContent = '未运行';
+                runStatus.style.color = '#5f6368';
+                portInfo.textContent = status.port;
+                urlInfo.textContent = '-';
+                
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                webBtn.disabled = true;
+                
+                if (isOpenCLAWInstalled) {
+                    statusDot.className = 'status-dot installed';
+                    statusText.textContent = '已安装';
+                }
+            }
+        }
+
+        async function installOpenCLAW() {
+            const installBtn = document.getElementById('installBtn');
+            installBtn.disabled = true;
+            installBtn.textContent = '安装中...';
+            
+            addLog('开始安装 OpenCLAW...', 'info');
+            
+            try {
+                const result = await ipcRenderer.invoke('install-openclaw');
+                
+                if (result.success) {
+                    addLog('✅ 安装成功！', 'success');
+                    setTimeout(() => checkOpenCLAWStatus(), 2000);
+                } else {
+                    addLog(`❌ 安装失败：${result.message}`, 'error');
+                }
+            } catch (error) {
+                addLog(`❌ 安装错误：${error.message}`, 'error');
+            } finally {
+                installBtn.disabled = false;
+                installBtn.textContent = '📥 安装 OpenCLAW';
+            }
+        }
+
+        async function startOpenCLAW() {
+            const startBtn = document.getElementById('startBtn');
+            startBtn.disabled = true;
+            startBtn.textContent = '启动中...';
+            
+            addLog('正在启动 OpenCLAW Gateway...', 'info');
+            
+            try {
+                const result = await ipcRenderer.invoke('start-openclaw');
+                
+                if (result.success) {
+                    addLog(`✅ 启动成功！端口：${result.port}`, 'success');
+                    const status = await ipcRenderer.invoke('get-openclaw-status');
+                    updateRunStatus(status);
+                } else {
+                    addLog(`❌ 启动失败：${result.message}`, 'error');
+                    startBtn.disabled = false;
+                }
+            } catch (error) {
+                addLog(`❌ 启动错误：${error.message}`, 'error');
+                startBtn.disabled = false;
+            } finally {
+                startBtn.textContent = '▶️ 启动';
+            }
+        }
+
+        async function stopOpenCLAW() {
+            const stopBtn = document.getElementById('stopBtn');
+            stopBtn.disabled = true;
+            stopBtn.textContent = '停止中...';
+            
+            addLog('正在停止 OpenCLAW...', 'info');
+            
+            try {
+                const result = await ipcRenderer.invoke('stop-openclaw');
+                
+                if (result.success) {
+                    addLog('✅ OpenCLAW 已停止', 'success');
+                    const status = await ipcRenderer.invoke('get-openclaw-status');
+                    updateRunStatus(status);
+                } else {
+                    addLog(`❌ 停止失败：${result.message}`, 'error');
+                }
+            } catch (error) {
+                addLog(`❌ 停止错误：${error.message}`, 'error');
+            } finally {
+                stopBtn.disabled = false;
+                stopBtn.textContent = '⏹️ 停止';
+            }
+        }
+
+        function openWeb() {
+            ipcRenderer.invoke('open-openclaw-web');
+            addLog('正在打开 Web 界面...', 'info');
+        }
+
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logLine = document.createElement('div');
+            logLine.className = `log-line ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            logLine.textContent = `[${timestamp}] ${message}`;
+            
+            logContainer.appendChild(logLine);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
