@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">TokenEdge</string>
+    <string name="title_home">首页</string>
+    <string name="title_models">模型</string>
+    <string name="title_settings">设置</string>
+    <string name="start_service">启动服务</string>
+    <string name="stop_service">停止服务</string>
+    <string name="service_running">服务运行中</string>
+    <string name="service_stopped">服务已停止</string>
+    <string name="download_model">下载模型</string>
+    <string name="select_local_model">选择本地模型</string>
+    <string name="model_downloaded">模型下载完成</string>
+    <string name="downloading">下载中</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确认</string>
+    <string name="download_url">下载地址</string>
+    <string name="enter_download_url">请输入模型下载地址（支持国内镜像）</string>
+    <string name="author_info">作者: 溪土红薯</string>
+    <string name="author_full">溪土红薯（XiTu893）</string>
+    <string name="github_url">https://github.com/XiTu893</string>
+    <string name="author_email">28491599@qq.com</string>
+    <string name="author_location">上海</string>
+    <string name="author_studio">溪土工作室</string>
+    <string name="api_test">API 测试</string>
+    <string name="send_message">发送消息</string>
+    <string name="response">响应</string>
+    <string name="model_list">模型列表</string>
+    <string name="gemma_2b">Gemma 4 2B</string>
+    <string name="gemma_7b">Gemma 4 7B</string>
+    <string name="gemma_27b">Gemma 4 27B</string>
+    <string name="port">端口</string>
+    <string name="default_port">8080</string>
+    <string name="api_address">API 地址</string>
+    <string name="copy">复制</string>
+    <string name="copied">已复制</string>
+</resources>
