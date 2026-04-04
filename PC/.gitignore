@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.log
+*.swp
+.DS_Store
+bun.lockb
+*.env
+*.env.local
+models/
+downloads/

@@ -1,0 +1,47 @@
+{
+  "name": "token-edge-pc",
+  "version": "1.0.0",
+  "description": "TokenEdge PC端 - 边缘设备部署大模型Token服务",
+  "main": "main.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "bun run main.js",
+    "start": "electron .",
+    "install:bun": "bun install",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "keywords": ["ai", "gemma", "llm", "bun", "electron"],
+  "author": "溪土红薯 <https://github.com/XiTu893>",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.2",
+    "cors": "^2.8.5"
+  },
+  "trustedDependencies": [
+    "electron"
+  ],
+  "build": {
+    "appId": "com.aiedge.app",
+    "productName": "TokenEdge",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}

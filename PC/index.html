@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TokenEdge - 边缘设备部署大模型Token服务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #1a73e8;
+            margin-bottom: 10px;
+        }
+
+        .author {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .author a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+
+        .api-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f0fe;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .api-info.show {
+            display: block;
+        }
+
+        .api-address {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #1a73e8;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .model-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .model-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .model-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .model-card.selected {
+            border-color: #1a73e8;
+            background: #e8f0fe;
+        }
+
+        .model-card.recommended {
+            border-left: 4px solid #34a853;
+        }
+
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .model-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #202124;
+        }
+
+        .model-size {
+            font-size: 0.9rem;
+            color: #5f6368;
+            background: #f1f3f4;
+            padding: 4px 12px;
+            border-radius: 16px;
+        }
+
+        .model-description {
+            color: #5f6368;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .model-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #5f6368;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: #202124;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-badge.not-downloaded {
+            background: #fce8e6;
+            color: #d93025;
+        }
+
+        .status-badge.downloading {
+            background: #fef7e0;
+            color: #f9ab00;
+        }
+
+        .status-badge.downloaded {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        .status-badge.running {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-badge.not-downloaded .status-dot {
+            background: #d93025;
+        }
+
+        .status-badge.downloading .status-dot {
+            background: #f9ab00;
+            animation: pulse 1s infinite;
+        }
+
+        .status-badge.downloaded .status-dot {
+            background: #137333;
+        }
+
+        .status-badge.running .status-dot {
+            background: #1a73e8;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .context-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .context-btn {
+            padding: 6px 16px;
+            border: 2px solid #dadce0;
+            background: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .context-btn:hover {
+            border-color: #1a73e8;
+        }
+
+        .context-btn.selected {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f1f3f4;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .progress-bar.show {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #1a73e8;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: #5f6368;
+            margin-bottom: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1557b0;
+        }
+
+        .btn-success {
+            background: #34a853;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #137333;
+        }
+
+        .btn-danger {
+            background: #ea4335;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c5221f;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .chat-btn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            background: linear-gradient(90deg, #1a73e8, #34a853);
+        }
+
+        .chat-btn:hover {
+            background: linear-gradient(90deg, #1557b0, #137333);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 TokenEdge</h1>
+            <p class="author">边缘设备部署大模型 Token API 服务</p>
+            <p class="author">
+                作者：<a href="https://github.com/XiTu893" target="_blank">溪土红薯</a> | 
+                邮箱：<a href="mailto:28491599@qq.com">28491599@qq.com</a>
+            </p>
+            <div class="api-info" id="apiInfo">
+                <strong>🌐 API 地址：</strong>
+                <span class="api-address" id="apiAddress">http://localhost:3000/v1/chat/completions</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="model-list" id="modelList">
+                <!-- 模型卡片将通过 JavaScript 动态生成 -->
+            </div>
+
+            <button class="btn chat-btn" id="chatBtn" disabled onclick="openChat()">
+                💬 打开聊天
+            </button>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 溪土工作室 | 上海</p>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        const { PC_MODELS, getRecommendedModel, getModelById } = require('./model/ModelConfig');
+        
+        let modelStates = {};
+        let selectedModelId = null;
+        let currentContextIndex = {};
+        let currentPort = 3000;
+        let isServiceRunning = false;
+        let currentRunningModelId = null;
+        let totalRAMGB = 16;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initModelStates();
+            renderModelList();
+            loadConfig();
+        });
+
+        function initModelStates() {
+            PC_MODELS.forEach(model => {
+                modelStates[model.id] = {
+                    status: 'NOT_DOWNLOADED',
+                    selectedContextIndex: model.defaultContextIndex
+                };
+                currentContextIndex[model.id] = model.defaultContextIndex;
+            });
+        }
+
+        function renderModelList() {
+            const container = document.getElementById('modelList');
+            container.innerHTML = '';
+
+            const recommendedModel = getRecommendedModel(totalRAMGB);
+
+            PC_MODELS.forEach(model => {
+                const state = modelStates[model.id];
+                const isRecommended = model.id === recommendedModel.id;
+                
+                const card = document.createElement('div');
+                card.className = `model-card ${selectedModelId === model.id ? 'selected' : ''} ${isRecommended ? 'recommended' : ''}`;
+                card.dataset.modelId = model.id;
+
+                const statusBadgeClass = getStatusBadgeClass(state.status);
+                const statusText = getStatusText(state.status);
+
+                card.innerHTML = `
+                    <div class="model-header">
+                        <div>
+                            <div class="model-name">${model.name}${isRecommended ? ' ⭐ 推荐' : ''}</div>
+                        </div>
+                        <div class="status-badge ${statusBadgeClass}">
+                            <div class="status-dot"></div>
+                            ${statusText}
+                        </div>
+                    </div>
+                    <div class="model-description">${model.description}</div>
+                    <div class="model-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">📦 大小:</span>
+                            <span>${model.sizeGB}GB</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">💾 内存:</span>
+                            <span>${model.minRAMGB}-${model.recommendedRAMGB}GB</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">📝 上下文:</span>
+                            <span>${model.contextOptions.map(c => c / 1024 + 'K').join(' / ')}</span>
+                        </div>
+                    </div>
+                    <div class="context-selector">
+                        ${model.contextOptions.map((ctx, i) => `
+                            <button class="context-btn ${currentContextIndex[model.id] === i ? 'selected' : ''}" 
+                                    onclick="selectContext('${model.id}', ${i}, event)">
+                                ${ctx / 1024}K
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div class="progress-bar" id="progressBar-${model.id}">
+                        <div class="progress-fill" id="progressFill-${model.id}"></div>
+                    </div>
+                    <div class="progress-text" id="progressText-${model.id}"></div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="downloadBtn-${model.id}" 
+                                onclick="downloadModel('${model.id}')"
+                                ${state.status === 'DOWNLOADING' || state.status === 'DOWNLOADED' || state.status === 'RUNNING' ? 'disabled' : ''}>
+                            📥 下载
+                        </button>
+                        <button class="btn btn-success" id="startBtn-${model.id}"
+                                onclick="startModel('${model.id}')"
+                                ${state.status !== 'DOWNLOADED' || isServiceRunning ? 'disabled' : ''}>
+                            ▶️ 启动
+                        </button>
+                        <button class="btn btn-danger" id="stopBtn-${model.id}"
+                                onclick="stopModel()"
+                                ${currentRunningModelId !== model.id || !isServiceRunning ? 'disabled' : ''}>
+                            ⏹️ 停止
+                        </button>
+                    </div>
+                `;
+
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.btn') && !e.target.closest('.context-btn')) {
+                        selectModel(model.id);
+                    }
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'NOT_DOWNLOADED': return 'not-downloaded';
+                case 'DOWNLOADING': return 'downloading';
+                case 'DOWNLOADED': return 'downloaded';
+                case 'STARTING':
+                case 'RUNNING': return 'running';
+                default: return 'not-downloaded';
+            }
+        }
+
+        function getStatusText(status) {
+            switch (status) {
+                case 'NOT_DOWNLOADED': return '未下载';
+                case 'DOWNLOADING': return '下载中';
+                case 'DOWNLOADED': return '已下载';
+                case 'STARTING': return '启动中';
+                case 'RUNNING': return '运行中';
+                default: return '未下载';
+            }
+        }
+
+        function selectModel(modelId) {
+            selectedModelId = modelId;
+            renderModelList();
+        }
+
+        function selectContext(modelId, index, event) {
+            event.stopPropagation();
+            currentContextIndex[modelId] = index;
+            renderModelList();
+        }
+
+        async function downloadModel(modelId) {
+            const model = getModelById(modelId);
+            if (!model) return;
+
+            modelStates[modelId].status = 'DOWNLOADING';
+            renderModelList();
+
+            const progressBar = document.getElementById(`progressBar-${modelId}`);
+            const progressFill = document.getElementById(`progressFill-${modelId}`);
+            const progressText = document.getElementById(`progressText-${modelId}`);
+            
+            progressBar.classList.add('show');
+
+            try {
+                const result = await ipcRenderer.invoke('download-model', model.downloadUrls, model.id);
+                
+                if (result.success) {
+                    modelStates[modelId].status = 'DOWNLOADED';
+                    progressText.textContent = `✅ 下载完成！源：${result.source}`;
+                } else {
+                    modelStates[modelId].status = 'NOT_DOWNLOADED';
+                    progressText.textContent = `❌ 下载失败：${result.error}`;
+                }
+            } catch (error) {
+                modelStates[modelId].status = 'NOT_DOWNLOADED';
+                progressText.textContent = `❌ 下载失败：${error.message}`;
+            }
+
+            renderModelList();
+        }
+
+        async function startModel(modelId) {
+            const model = getModelById(modelId);
+            if (!model) return;
+
+            modelStates[modelId].status = 'STARTING';
+            renderModelList();
+
+            try {
+                const result = await ipcRenderer.invoke('start-service', {
+                    modelId: modelId,
+                    contextSize: model.contextOptions[currentContextIndex[modelId]]
+                });
+
+                if (result.success) {
+                    modelStates[modelId].status = 'RUNNING';
+                    isServiceRunning = true;
+                    currentRunningModelId = modelId;
+                    currentPort = result.port;
+                    
+                    document.getElementById('apiAddress').textContent = `http://localhost:${currentPort}/v1/chat/completions`;
+                    document.getElementById('apiInfo').classList.add('show');
+                    document.getElementById('chatBtn').disabled = false;
+                } else {
+                    modelStates[modelId].status = 'DOWNLOADED';
+                    alert(`启动失败：${result.message}`);
+                }
+            } catch (error) {
+                modelStates[modelId].status = 'DOWNLOADED';
+                alert(`启动失败：${error.message}`);
+            }
+
+            renderModelList();
+        }
+
+        async function stopModel() {
+            if (!currentRunningModelId) return;
+
+            try {
+                const result = await ipcRenderer.invoke('stop-service');
+                
+                if (result.success) {
+                    modelStates[currentRunningModelId].status = 'DOWNLOADED';
+                    isServiceRunning = false;
+                    currentRunningModelId = null;
+                    
+                    document.getElementById('apiInfo').classList.remove('show');
+                    document.getElementById('chatBtn').disabled = true;
+                }
+            } catch (error) {
+                alert(`停止失败：${error.message}`);
+            }
+
+            renderModelList();
+        }
+
+        function openChat() {
+            if (!isServiceRunning || !currentPort) {
+                alert('请先启动模型服务');
+                return;
+            }
+            ipcRenderer.invoke('open-chat', { port: currentPort });
+        }
+
+        function loadConfig() {
+            ipcRenderer.invoke('load-config').then(config => {
+                if (config) {
+                    if (config.totalRAMGB) {
+                        totalRAMGB = config.totalRAMGB;
+                    }
+                    if (config.modelStates) {
+                        Object.assign(modelStates, config.modelStates);
+                    }
+                    if (config.currentContextIndex) {
+                        Object.assign(currentContextIndex, config.currentContextIndex);
+                    }
+                    renderModelList();
+                }
+            });
+        }
+
+        function saveConfig() {
+            ipcRenderer.invoke('save-config', {
+                totalRAMGB,
+                modelStates,
+                currentContextIndex
+            });
+        }
+
+        ipcRenderer.on('download-progress', (event, data) => {
+            const progressFill = document.getElementById(`progressFill-${data.modelId}`);
+            const progressText = document.getElementById(`progressText-${data.modelId}`);
+            
+            if (progressFill) {
+                progressFill.style.width = `${data.progress}%`;
+            }
+            if (progressText) {
+                progressText.textContent = `下载进度: ${data.progress}%`;
+            }
+        });
+
+        ipcRenderer.on('download-source-change', (event, data) => {
+            const progressText = document.getElementById(`progressText-${data.modelId}`);
+            if (progressText) {
+                progressText.textContent = `正在使用 ${data.source} 下载 (第 ${data.attempt} 次尝试)...`;
+            }
+        });
+
+        ipcRenderer.on('download-error', (event, data) => {
+            const progressText = document.getElementById(`progressText-${data.modelId}`);
+            if (progressText) {
+                progressText.textContent = `${data.source} 下载失败: ${data.error}`;
+            }
+        });
+
+        ipcRenderer.on('download-waiting', (event, data) => {
+            const progressText = document.getElementById(`progressText-${data.modelId}`);
+            if (progressText) {
+                progressText.textContent = data.message;
+            }
+        });
+    </script>
+</body>
+</html>
