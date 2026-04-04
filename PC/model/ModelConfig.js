@@ -27,10 +27,10 @@ const PC_MODELS = [
         [8192, 32768, 65536, 131072],
         1,
         [
-            "https://modelscope.cn/models/litert-community/gemma-4-E2B-it-litert-lm/resolve/master/gemma-4-E2B-it.litertlm",
-            "https://ghproxy.com/https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it.litertlm",
-            "https://hf-mirror.com/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it.litertlm",
-            "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it.litertlm"
+            "https://modelscope.cn/models/litert-community/gemma-4-E2B-it/resolve/master/gemma-4-E2B-it.gguf",
+            "https://ghproxy.com/https://huggingface.co/litert-community/gemma-4-E2B-it/resolve/main/gemma-4-E2B-it.gguf",
+            "https://hf-mirror.com/litert-community/gemma-4-E2B-it/resolve/main/gemma-4-E2B-it.gguf",
+            "https://huggingface.co/litert-community/gemma-4-E2B-it/resolve/main/gemma-4-E2B-it.gguf"
         ],
         "端侧版 · 2.3B 有效参数 · 极致轻量 · 适合轻薄本"
     ),
