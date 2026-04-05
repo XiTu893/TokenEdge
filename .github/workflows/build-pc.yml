@@ -30,8 +30,6 @@ jobs:
           npm install
       
       - name: Build Windows Application
-        env:
-          npm_config_yes: true
         run: |
           cd PC
           npx electron-builder --win
@@ -65,8 +63,6 @@ jobs:
           npm install
       
       - name: Build Linux Application
-        env:
-          npm_config_yes: true
         run: |
           cd PC
           npx electron-builder --linux
@@ -99,8 +95,6 @@ jobs:
           npm install
       
       - name: Build macOS Application
-        env:
-          npm_config_yes: true
         run: |
           cd PC
           npx electron-builder --mac

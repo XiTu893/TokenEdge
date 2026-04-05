@@ -169,7 +169,7 @@ ipcMain.handle('start-service', async (event, config) => {
         config.port = port;
         config.modelPath = modelPath;
         
-        const serverScript = path.join(__dirname, 'server.js');
+        const serverScript = path.join(__dirname, 'server-simple.js');
         apiServer = spawn('node', [serverScript, JSON.stringify(config)]);
         
         apiServer.stdout.on('data', (data) => {
