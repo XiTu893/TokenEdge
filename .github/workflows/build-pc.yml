@@ -27,7 +27,8 @@ jobs:
       - name: Install dependencies
         run: |
           cd PC
-          npm install
+          # 使用 npm ci 并忽略 postinstall 脚本以避免 node-llama-cpp 编译问题
+          npm ci --ignore-scripts || npm install --ignore-scripts
       
       - name: Build Windows Application
         run: |
@@ -60,7 +61,8 @@ jobs:
       - name: Install dependencies
         run: |
           cd PC
-          npm install
+          # 使用 npm ci 并忽略 postinstall 脚本以避免 node-llama-cpp 编译问题
+          npm ci --ignore-scripts || npm install --ignore-scripts
       
       - name: Build Linux Application
         run: |
@@ -92,7 +94,8 @@ jobs:
       - name: Install dependencies
         run: |
           cd PC
-          npm install
+          # 使用 npm ci 并忽略 postinstall 脚本以避免 node-llama-cpp 编译问题
+          npm ci --ignore-scripts || npm install --ignore-scripts
       
       - name: Build macOS Application
         run: |

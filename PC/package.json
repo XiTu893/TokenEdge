@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "TokenEdge PC 端 - 边缘设备部署大模型 Token 服务",
   "main": "main.js",
-  "type": "commonjs",
+  "type": "module",
   "bin": "server.js",
   "scripts": {
     "dev": "bun run main.js",
@@ -29,7 +29,8 @@
   "dependencies": {
     "express": "^4.18.2",
     "axios": "^1.6.2",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "node-llama-cpp": "^3.18.1"
   },
   "pkg": {
     "scripts": "server-simple.js",

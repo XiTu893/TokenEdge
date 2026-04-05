@@ -1,14 +1,17 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const fs = require('fs');
-const { LlamaChatSession, LlamaModel } = require('node-llama-cpp');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { getLlama, LlamaChatSession } from 'node-llama-cpp';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const config = JSON.parse(process.argv[2] || '{}');
 const app = express();
 const PORT = config.port || 8080;
 
-let model = null;
 let session = null;
 
 app.use(cors());
@@ -23,7 +26,8 @@ async function initializeModel() {
 
     try {
         console.log('Loading model:', config.modelPath);
-        model = new LlamaModel({ modelPath: config.modelPath });
+        const llama = await getLlama();
+        const model = await llama.loadModel({ modelPath: config.modelPath });
         session = new LlamaChatSession({ model });
         console.log('Model loaded successfully');
     } catch (error) {
@@ -36,7 +40,7 @@ app.get('/health', (req, res) => {
         status: 'ok', 
         model: config.modelPath || 'Not set', 
         port: PORT,
-        modelLoaded: !!model
+        modelLoaded: !!session
     });
 });
 
@@ -162,6 +166,6 @@ initializeModel().then(() => {
         console.log(`Server running on http://0.0.0.0:${PORT}`);
         console.log(`Health check: http://0.0.0.0:${PORT}/health`);
         console.log(`API docs: http://0.0.0.0:${PORT}/v1/models`);
-        console.log(`Model status: ${model ? 'Loaded' : 'Not loaded'}`);
+        console.log(`Model status: ${session ? 'Loaded' : 'Not loaded'}`);
     });
 });
