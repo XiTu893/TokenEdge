@@ -27,6 +27,7 @@ TokenEdge 是一个参考 Google Edge Gallery 设计风格的项目，提供 And
 
 - [完整项目 ZIP 下载](#)
 - [Android APK 下载](#)
+- [PC 端安装包下载](https://github.com/XiTu893/TokenEdge/actions)（GitHub Actions 自动编译）
 
 ## 支持的模型
 

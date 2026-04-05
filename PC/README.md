@@ -72,26 +72,50 @@ TokenEdge PC 端 - 边缘设备部署大模型 Token API 服务
 
 ## 快速开始
 
-### 前置要求
+### 方式一：使用编译好的安装包（推荐）
 
-- Node.js 18+
-- npm 或 yarn
+1. 访问 [GitHub Actions](https://github.com/XiTu893/TokenEdge/actions)
+2. 选择最新的 "Build PC Application" 工作流
+3. 下载对应系统的安装包：
+   - **Windows**: 下载 `TokenEdge-Windows.zip`，解压后运行 `.exe` 安装包
+   - **Linux**: 下载 `TokenEdge-Linux.zip`，解压后运行 `.AppImage` 文件
+   - **macOS**: 下载 `TokenEdge-macOS.zip`，解压后运行 `.dmg` 安装包
+4. 安装完成后直接运行
 
-### 安装依赖
+### 方式二：本地源码运行
+
+#### 前置要求
+
+- Bun 1.0+（推荐使用 Bun，速度更快）
+- 或者 Node.js 18+
+
+#### 安装依赖
 
 ```bash
+# 使用 Bun（推荐）
+bun install
+
+# 或使用 npm
 npm install
 ```
 
-### 运行
+#### 运行
 
 ```bash
+# 使用 Bun
+bun run start
+
+# 或使用 npm
 npm start
 ```
 
-### 开发模式
+#### 开发模式
 
 ```bash
+# 使用 Bun
+bun run dev
+
+# 或使用 npm
 npm run dev
 ```
 
@@ -100,10 +124,12 @@ npm run dev
 ```
 PC/
 ├── main.js              # Electron 主进程
-├── server.js            # API 服务器
+├── server.js            # API 服务器（集成 llama.cpp 推理）
 ├── downloader.js        # 模型下载器（支持多源重试）
-├── index.html           # 前端界面
+├── index.html           # 主界面
+├── test-chat.html       # 测试聊天界面
 ├── package.json         # 项目配置
+├── bunfig.toml          # Bun 配置
 ├── model/
 │   └── ModelConfig.js   # 模型配置（14 个领先模型）
 ├── run.bat              # Windows 一键启动
@@ -150,7 +176,9 @@ http://localhost:3000
 
 ## 模型格式说明
 
-所有模型都是 **LiteRT 格式**（.litertlm），这是 MediaPipe LLM Inference API 原生支持的格式，无需转换即可使用。
+PC 端使用 **GGUF 格式**，这是 llama.cpp 原生支持的格式。GGUF（GGML Unified Format）是 llama.cpp 社区标准的模型格式，具有优秀的跨平台兼容性和加载性能。
+
+所有模型会自动下载 GGUF 版本，无需手动转换。
 
 ## 作者信息
 
