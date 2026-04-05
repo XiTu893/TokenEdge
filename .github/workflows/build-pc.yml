@@ -19,29 +19,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
       
-      - name: Install Windows Build Tools
-        run: |
-          npm install -g windows-build-tools
-      
       - name: Install dependencies
         run: |
           cd PC
-          bun install
+          npm install
       
       - name: Build Windows Application
+        env:
+          npm_config_yes: true
         run: |
           cd PC
-          bun run build:win
+          npx electron-builder --win
       
       - name: Upload Windows Build
         uses: actions/upload-artifact@v4
@@ -56,11 +49,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -74,12 +62,14 @@ jobs:
       - name: Install dependencies
         run: |
           cd PC
-          bun install
+          npm install
       
       - name: Build Linux Application
+        env:
+          npm_config_yes: true
         run: |
           cd PC
-          bun run build:linux
+          npx electron-builder --linux
       
       - name: Upload Linux Build
         uses: actions/upload-artifact@v4
@@ -94,11 +84,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -111,12 +96,14 @@ jobs:
       - name: Install dependencies
         run: |
           cd PC
-          bun install
+          npm install
       
       - name: Build macOS Application
+        env:
+          npm_config_yes: true
         run: |
           cd PC
-          bun run build:mac
+          npx electron-builder --mac
       
       - name: Upload macOS Build
         uses: actions/upload-artifact@v4
