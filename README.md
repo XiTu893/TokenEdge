@@ -184,10 +184,21 @@ Authorization: Bearer tokenedge
 
 ### PC 端
 
+**方式一：使用 GitHub Actions 编译（推荐）**
+
+1. 访问 [GitHub Actions](https://github.com/XiTu893/TokenEdge/actions)
+2. 选择最新的 "Build PC Application" 工作流
+3. 下载对应系统的安装包（Windows/Linux/macOS）
+4. 安装并运行
+
+**方式二：本地源码运行**
+
 1. 进入 PC 目录
-2. 使用 Bun 一键运行
    ```bash
    cd PC
+   ```
+2. 使用 Bun 一键运行
+   ```bash
    # Windows
    run.bat
    # Mac/Linux
@@ -198,9 +209,9 @@ Authorization: Bearer tokenedge
 
 ## GitHub Actions 自动编译
 
-项目已配置 GitHub Actions 工作流，每次 push 到 main/master 分支都会自动编译 APK：
+项目已配置 GitHub Actions 工作流，每次 push 到 main/master 分支都会自动编译：
 
-### 使用步骤
+### Android APK 编译
 
 1. 生成 Gradle Wrapper（在 Android 目录下）：
    ```bash
@@ -211,6 +222,16 @@ Authorization: Bearer tokenedge
 3. 打开 GitHub 仓库 → Actions 标签
 4. 查看 "Build Android APK" 工作流
 5. 下载编译好的 APK Artifacts
+
+### PC 端应用编译
+
+1. 提交代码到 GitHub
+2. 打开 GitHub 仓库 → Actions 标签
+3. 查看 "Build PC Application" 工作流
+4. 下载对应系统的安装包：
+   - Windows: `TokenEdge-Windows.zip`（包含 .exe 安装包）
+   - Linux: `TokenEdge-Linux.zip`（包含 .AppImage）
+   - macOS: `TokenEdge-macOS.zip`（包含 .dmg）
 
 ### APK 下载位置
 
